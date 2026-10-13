@@ -69,7 +69,7 @@ class _MementoDashboardState extends State<MementoDashboard> {
         ),
         child: NavigationBarTheme(
           data: NavigationBarThemeData(
-            labelTextStyle: WidgetStateProperty.all(
+            labelTextStyle: MaterialStateProperty.all(
               const TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
