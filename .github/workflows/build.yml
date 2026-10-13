@@ -1,14 +1,14 @@
-name: Build Android APK
+name: Build and Release APK
 
 on:
   push:
-    branches: [ "main", "master" ]
-  pull_request:
     branches: [ "main", "master" ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout repository
@@ -28,21 +28,20 @@ jobs:
           cache: true
 
       - name: Create Flutter project structure
-        run: |
-          # Создаем временный проект, чтобы получить рабочие файлы Android и pubspec
-          flutter create . --org com.memento.app --project-name memento_mobile --platforms=android
+        run: flutter create . --org com.memento.app --project-name memento_mobile --platforms=android
 
       - name: Restore our custom main.dart
-        run: |
-          # Убеждаемся, что наш красивый интерфейс на месте (он мог перезаписаться командой выше)
-          # Если файл lib/main.dart стерся, git checkout вернет его, либо мы заменяем его содержимое
-          git checkout lib/main.dart || true
+        run: git checkout lib/main.dart || true
 
       - name: Build APK Release
         run: flutter build apk --release
 
-      - name: Upload APK artifact
-        uses: actions/upload-artifact@v4
+      - name: Create Release and Upload APK
+        uses: softprops/action-gh-release@v2
         with:
-          name: memento-release-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
+          tag_name: v1.0.${{ github.run_number }}
+          name: Memento Mobile v1.0.${{ github.run_number }}
+          files: build/app/outputs/flutter-apk/app-release.apk
+          body: 'Свежая сборка Memento Mobile для Android'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
