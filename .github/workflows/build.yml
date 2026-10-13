@@ -1,4 +1,4 @@
-name: Build and Release APK
+name: Build Android APK
 
 on:
   push:
@@ -7,8 +7,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
 
     steps:
       - name: Checkout repository
@@ -36,12 +34,9 @@ jobs:
       - name: Build APK Release
         run: flutter build apk --release
 
-      - name: Create Release and Upload APK
-        uses: softprops/action-gh-release@v2
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
         with:
-          tag_name: v1.0.${{ github.run_number }}
-          name: Memento Mobile v1.0.${{ github.run_number }}
-          files: build/app/outputs/flutter-apk/app-release.apk
-          body: 'Свежая сборка Memento Mobile для Android'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: memento-app
+          path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
