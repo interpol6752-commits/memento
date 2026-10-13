@@ -27,25 +27,16 @@ jobs:
           channel: 'stable'
           cache: true
 
-      - name: Create basic pubspec.yaml
+      - name: Create Flutter project structure
         run: |
-          cat << 'EOF' > pubspec.yaml
-          name: memento_mobile
-          description: "A mobile version of Memento network utility."
-          publish_to: 'none'
-          version: 1.0.0+1
-          environment:
-            sdk: '>=3.0.0 <4.0.0'
-          dependencies:
-            flutter:
-              sdk: flutter
-            cupertino_icons: ^1.0.6
-          flutter:
-            uses-material-design: true
-          EOF
+          # Создаем временный проект, чтобы получить рабочие файлы Android и pubspec
+          flutter create . --org com.memento.app --project-name memento_mobile --platforms=android
 
-      - name: Install dependencies
-        run: flutter pub get
+      - name: Restore our custom main.dart
+        run: |
+          # Убеждаемся, что наш красивый интерфейс на месте (он мог перезаписаться командой выше)
+          # Если файл lib/main.dart стерся, git checkout вернет его, либо мы заменяем его содержимое
+          git checkout lib/main.dart || true
 
       - name: Build APK Release
         run: flutter build apk --release
