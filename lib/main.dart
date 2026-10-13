@@ -1,45 +1,52 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MementoApp());
+  runApp(const MementoMobileApp());
 }
 
-class MementoApp extends StatelessWidget {
-  const MementoApp({super.key});
+class MementoMobileApp extends StatelessWidget {
+  const MementoMobileApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Memento Mobile',
+      title: 'Memento',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF1E293B),
-          brightness: Brightness.dark,
+        brightness: Brightness.dark,
+        scaffoldBackgroundColor: const Color(0xFF0B0F19),
+        colorScheme: const ColorScheme.dark(
+          primary: Color(0xFF6366F1), // Яркий индиго / неон
+          secondary: Color(0xFF06B6D4), // Неоновый циан
+          surface: Color(0xFF131B2E),
         ),
-        scaffoldBackgroundColor: const Color(0xFF0F172A),
+        cardTheme: CardThemeData(
+          color: const Color(0xFF161F37),
+          elevation: 6,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        ),
       ),
-      home: const MainDashboard(),
+      home: const MementoDashboard(),
     );
   }
 }
 
-class MainDashboard extends StatefulWidget {
-  const MainDashboard({super.key});
+class MementoDashboard extends StatefulWidget {
+  const MementoDashboard({super.key});
 
   @override
-  State<MainDashboard> createState() => _MainDashboardState();
+  State<MementoDashboard> createState() => _MementoDashboardState();
 }
 
-class _MainDashboardState extends State<MainDashboard> {
+class _MementoDashboardState extends State<MementoDashboard> {
   int _currentIndex = 0;
 
-  final List<Widget> _screens = const [
-    HomeScreen(),
-    ScannerScreen(),
-    PingerScreen(),
-    ConfigsScreen(),
+  final List<Widget> _pages = const [
+    OverviewPage(),
+    VpnProxyPage(),
+    IpScannerPage(),
+    ConfigsPage(),
   ];
 
   @override
@@ -48,95 +55,234 @@ class _MainDashboardState extends State<MainDashboard> {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: _screens[_currentIndex],
+          child: _pages[_currentIndex],
         ),
       ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _currentIndex,
-        onDestinationSelected: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.dashboard_outlined),
-            selectedIcon: Icon(Icons.dashboard),
-            label: 'Главная',
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: const Color(0xFF111827),
+          border: Border(top: BorderSide(color: Colors.white.withOpacity(0.05), width: 1)),
+        ),
+        child: NavigationBarTheme(
+          data: NavigationBarThemeData(
+            labelTextStyle: MaterialStateProperty.all(
+              const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.white70),
+            ),
           ),
-          NavigationDestination(
-            icon: Icon(Icons.radar_outlined),
-            selectedIcon: Icon(Icons.radar),
-            label: 'Сканер',
+          child: NavigationBar(
+            backgroundColor: const Color(0xFF111827),
+            indicatorColor: const Color(0xFF6366F1).withOpacity(0.3),
+            selectedIndex: _currentIndex,
+            onDestinationSelected: (index) => setState(() => _currentIndex = index),
+            destinations: const [
+              NavigationDestination(
+                icon: Icon(Icons.dashboard_outlined, color: Colors.white60),
+                selectedIcon: Icon(Icons.dashboard, color: Color(0xFF6366F1)),
+                label: 'Обзор',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.vpn_key_outlined, color: Colors.white60),
+                selectedIcon: Icon(Icons.vpn_key, color: Color(0xFF06B6D4)),
+                label: 'VPN / Core',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.radar_outlined, color: Colors.white60),
+                selectedIcon: Icon(Icons.radar, color: Color(0xFF34D399)),
+                label: 'Сканер',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.tune_outlined, color: Colors.white60),
+                selectedIcon: Icon(Icons.tune, color: Color(0xFFF43F5E)),
+                label: 'Конфиги',
+              ),
+            ],
           ),
-          NavigationDestination(
-            icon: Icon(Icons.network_ping_outlined),
-            selectedIcon: Icon(Icons.network_ping),
-            label: 'Пингер',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.settings_input_component_outlined),
-            selectedIcon: Icon(Icons.settings_input_component),
-            label: 'Конфиги',
-          ),
-        ],
+        ),
       ),
     );
   }
 }
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+// 1. Главная страница (Обзор)
+class OverviewPage extends StatelessWidget {
+  const OverviewPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return ListView(
       children: [
-        const Text(
-          'Memento Mobile',
-          style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white),
-        ),
-        const SizedBox(height: 8),
-        const Text(
-          'Удобная и просторная панель управления сетью',
-          style: TextStyle(fontSize: 16, color: Colors.white70),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                Text(
+                  'MEMENTO',
+                  style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900, letterSpacing: 1.2, color: Colors.white),
+                ),
+                SizedBox(height: 4),
+                Text('Mobile Security & Networks', style: TextStyle(fontSize: 13, color: Colors.white60)),
+              ],
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: const Color(0xFF34D399).withOpacity(0.15),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: const Color(0xFF34D399).withOpacity(0.4)),
+              ),
+              child: const Text('v3.2.0 Pro', style: TextStyle(color: Color(0xFF34D399), fontWeight: FontWeight.bold, fontSize: 12)),
+            ),
+          ],
         ),
         const SizedBox(height: 24),
         Card(
-          elevation: 4,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          child: const Padding(
-            padding: EdgeInsets.all(20.0),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Статус VPN / Прокси', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                SizedBox(height: 12),
                 Row(
-                  children: [
-                    Icon(Icons.check_circle, color: Colors.green, size: 28),
+                  children: const [
+                    Icon(Icons.shield, color: Color(0xFF06B6D4), size: 28),
                     SizedBox(width: 12),
-                    Text('Готов к подключению', style: TextStyle(fontSize: 16)),
+                    Text('Статус защищенного туннеля', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.25),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: const [
+                      Text('Соединение:', style: TextStyle(color: Colors.white70)),
+                      Text('Готово к работе', style: TextStyle(color: Color(0xFF34D399), fontWeight: FontWeight.bold)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                Text('Быстрые метрики сети', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                SizedBox(height: 14),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    MetricItem(label: 'Пинг', value: '14 ms', color: Color(0xFF34D399)),
+                    MetricItem(label: 'Пакеты', value: '0% loss', color: Color(0xFF06B6D4)),
+                    MetricItem(label: 'Узлы', value: '4 актив.', color: Color(0xFF6366F1)),
                   ],
                 ),
               ],
             ),
           ),
         ),
-        const SizedBox(height: 16),
+      ],
+    );
+  }
+}
+
+class MetricItem extends StatelessWidget {
+  final String label;
+  final String value;
+  final Color color;
+
+  const MetricItem({super.key, required this.label, required this.value, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(value, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: color)),
+        const SizedBox(height: 4),
+        Text(label, style: const TextStyle(fontSize: 12, color: Colors.white54)),
+      ],
+    );
+  }
+}
+
+// 2. Страница VPN / Прокси
+class VpnProxyPage extends StatefulWidget {
+  const VpnProxyPage({super.key});
+
+  @override
+  State<VpnProxyPage> createState() => _VpnProxyPageState();
+}
+
+class _VpnProxyPageState extends State<VpnProxyPage> {
+  bool _isConnected = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      children: [
+        const Text('Управление VPN / Xray', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 20),
+        Center(
+          child: GestureDetector(
+            onTap: () => setState(() => _isConnected = !_isConnected),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              width: 160,
+              height: 160,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  colors: _isConnected
+                      ? [const Color(0xFF06B6D4), const Color(0xFF6366F1)]
+                      : [const Color(0xFF1E293B), const Color(0xFF0F172A)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: (_isConnected ? const Color(0xFF06B6D4) : Colors.black).withOpacity(0.4),
+                    blurRadius: 20,
+                    spreadRadius: 2,
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    _isConnected ? Icons.power_settings_new : Icons.power_off,
+                    size: 50,
+                    color: Colors.white,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    _isConnected ? 'ВКЛЮЧЕНО' : 'ВЫКЛЮЧЕНО',
+                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 30),
         Card(
-          elevation: 4,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          child: const Padding(
-            padding: EdgeInsets.all(20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Быстрые действия', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                SizedBox(height: 16),
-                Text('Выберите инструмент в нижней панели навигации для сканирования сети, пингов или конфигураций без тесноты.',
-                    style: TextStyle(fontSize: 14, color: Colors.white70)),
-              ],
+          child: ListTile(
+            leading: const Icon(Icons.router, color: Color(0xFF6366F1)),
+            title: const Text('Основной узел соединения'),
+            subtitle: const Text('Протокол: VLESS + XTLS-Reality'),
+            trailing: Switch(
+              value: _isConnected,
+              onChanged: (val) => setState(() => _isConnected = val),
+              activeColor: const Color(0xFF06B6D4),
             ),
           ),
         ),
@@ -145,117 +291,14 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-class ScannerScreen extends StatelessWidget {
-  const ScannerScreen({super.key});
+// 3. Страница IP Сканера
+class IpScannerPage extends StatelessWidget {
+  const IpScannerPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('IP Сканер', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white)),
-        const SizedBox(height: 16),
-        ElevatedButton.icon(
-          onPressed: () {},
-          icon: const Icon(Icons.search),
-          label: const Text('Запустить сканирование сети'),
-          style: ElevatedButton.styleFrom(
-            minimumSize: const Size.fromHeight(50),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          ),
-        ),
-        const SizedBox(height: 20),
-        Expanded(
-          child: ListView.builder(
-            itemCount: 5,
-            itemBuilder: (context, index) {
-              return Card(
-                margin: const EdgeInsets.only(bottom: 12),
-                child: ListTile(
-                  leading: const Icon(Icons.devices, color: Colors.blueAccent),
-                  title: Text('Устройство 192.168.1.${index + 10}'),
-                  subtitle: const Text('Активно • Пинг 12ms'),
-                  trailing: const Icon(Icons.chevron_right),
-                ),
-              );
-            },
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class PingerScreen extends StatelessWidget {
-  const PingerScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text('Сетевой Пингер', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white)),
-        const SizedBox(height: 16),
-        TextField(
-          decoration: InputDecoration(
-            labelText: 'Хост или IP адрес',
-            hintText: 'например, 8.8.8.8',
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            filled: true,
-          ),
-        ),
-        const SizedBox(height: 16),
-        ElevatedButton.icon(
-          onPressed: () {},
-          icon: const Icon(Icons.play_arrow),
-          label: const Text('Начать пинг'),
-          style: ElevatedButton.styleFrom(
-            minimumSize: const Size.fromHeight(50),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class ConfigsScreen extends StatelessWidget {
-  const ConfigsScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text('Конфигурации', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white)),
-        const SizedBox(height: 16),
-        Expanded(
-          child: ListView(
-            children: [
-              Card(
-                child: ListTile(
-                  title: const Text('Основной прокси-сервер'),
-                  subtitle: const Text('Тип: Xray / VLESS'),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.edit),
-                    onPressed: () {},
-                  ),
-                ),
-              ),
-              Card(
-                child: ListTile(
-                  title: const Text('Резервный узел'),
-                  subtitle: const Text('Тип: Shadowsocks'),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.edit),
-                    onPressed: () {},
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
+        const Text('Сканер сети', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 
